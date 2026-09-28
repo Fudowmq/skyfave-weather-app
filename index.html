@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyFave</title>
+    <link rel="icon" href="src/icon.png" type="icon/photo">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="header-menu">
+                <div class="header-logo">
+                    <img src="src/icon.png" alt="">
+                    <a href="#" class="header-text">SkyFave</a>
+                </div>
+
+                <div class="header-button">
+                    <div class="unit-toggle">
+                        <button class="active">°C</button>
+                        <button>°F</button>
+                    </div>
+
+                    <button class="header-button__add">+ Добавить город</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="container">
+            <div class="main-section">
+                <section class="weather-search">
+                    <h1 class="weather-title">Погода сейчас</h1>
+                    <p class="weather-desc">Введите город для поиска актуального прогноза</p>
+                    <input class="weather-input" type="text" placeholder="Введите название города...">
+                    <button class="weather-search__button">Найти</button>
+                    
+                    <div class="weather-button__nav">
+                        <button class="weather-button">Dubai</button>
+                        <button class="weather-button">Paris</button>
+                        <button class="weather-button">Tokyo</button>
+                        <button class="weather-button">New York</button>
+                        <button class="weather-button">Sedney</button>
+                        <button class="weather-button">London</button>
+                    </div>
+
+                    <div class="weather-search__empty">
+                        <div class="weather-search__empty-img">
+                            <img src="src/internet.png" alt="">
+                        </div>
+                        <div class="weather-search__empty-text">Введите название любого города и узнайте погоду прямо сейчас</div>
+                    </div>
+                </section>
+
+                <section class="favorites">
+                    <div class="favorites-header">
+                        <h2 class="favorites-header_title">Избранные города</h2>
+                        <button class="favorites_header_button">+</button>
+                    </div>
+                    <span class="favorites-header_desc">3 города</span>
+
+                    <ul class="favorites__list">
+                        <li class="favorites__item">
+                            <div class="favorites-row">
+                                <div class="favorites-img">
+                                    <img src="src/sun.png" alt="">
+                                </div>
+    
+                                <div class="favorites-title">
+                                    <div class="favorites-city">Paris <span>FR</span></div>
+                                    <p class="favorites-weather">Sunny</p>
+                                    <p class="favorites-title__desc">"Planning a trip in October 🗼"</p>
+                                </div>
+    
+                                <div class="favorites-temperature">
+                                    <div class="favorites-degrees">19°C</div>
+                                    <div class="favorites-metrics">В 22 / Н 14</div>
+                                </div>
+                            </div>
+
+                            <div class="favorites-changes">
+                                <button class="favorites-note">
+                                    <img src="src/note.png" alt="">
+                                    <span class="favorites-note__button">Заметка</span>
+                                </button>
+                                <button class="favorites-delete">
+                                    <img src="src/trash.png" alt="">
+                                    <span class="favorites-delete__button">Удалить</span>
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <ul class="favorites__list">
+                        <li class="favorites__item">
+                            <div class="favorites-row">
+                                <div class="favorites-img">
+                                    <img src="src/sun.png" alt="">
+                                </div>
+    
+                                <div class="favorites-title">
+                                    <div class="favorites-city">Tokyo <span>JP</span></div>
+                                    <p class="favorites-weather">Humid & Hazy</p>
+
+                                </div>
+    
+                                <div class="favorites-temperature">
+                                    <div class="favorites-degrees">28°C</div>
+                                    <div class="favorites-metrics">В 30 / Н 24</div>
+                                </div>
+                            </div>
+
+                            <div class="favorites-changes">
+                                <button class="favorites-note">
+                                    <img src="src/note.png" alt="">
+                                    <span class="favorites-note__button">Заметка</span>
+                                </button>
+                                <button class="favorites-delete">
+                                    <img src="src/trash.png" alt="">
+                                    <span class="favorites-delete__button">Удалить</span>
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+
+                    <ul class="favorites__list">
+                        <li class="favorites__item">
+                            <div class="favorites-row">
+                                <div class="favorites-img">
+                                    <img src="src/sun.png" alt="">
+                                </div>
+    
+                                <div class="favorites-title">
+                                    <div class="favorites-city">New York <span>US</span></div>
+                                    <p class="favorites-weather">Clear</p>
+                                    <p class="favorites-title__desc">"Conference next month ✈️"</p>
+                                </div>
+    
+                                <div class="favorites-temperature">
+                                    <div class="favorites-degrees">23°C</div>
+                                    <div class="favorites-metrics">В 26 / Н 18</div>
+                                </div>
+                            </div>
+
+                            <div class="favorites-changes">
+                                <button class="favorites-note">
+                                    <img src="src/note.png" alt="">
+                                    <span class="favorites-note__button">Заметка</span>
+                                </button>
+                                <button class="favorites-delete">
+                                    <img src="src/trash.png" alt="">
+                                    <span class="favorites-delete__button">Удалить</span>
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+
+                </section>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
