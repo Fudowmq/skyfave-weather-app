@@ -292,6 +292,10 @@ header {
 }
 
 .favorites__list {
+    gap: 12px;
+}
+
+.favorites__item {
     border: 1px solid #E0F2FE;
     max-width: 100%;
     background-color: rgba(255, 255, 255, 0.7);
@@ -300,7 +304,7 @@ header {
     transition: 0.25s;
 }
 
-.favorites__list:hover {
+.favorites__item:hover {
     transform: translateY(-3px);
     box-shadow:
         0 6px 10px -2px rgba(14, 165, 233, 0.08),
@@ -408,5 +412,112 @@ header {
     width: 12px;
     height: 12px;
     filter: brightness(0) saturate(100%) invert(77%) sepia(20%) saturate(278%) hue-rotate(176deg) brightness(79%) contrast(96%);
+}
 
+
+
+.modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(15, 23, 42, 0.25);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.modal__window {
+    position: relative;
+    background: white;
+    border-radius: 20px;
+    padding: 24px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 40px -8px rgba(14, 165, 233, 0.25);
+}
+
+.modal__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+}
+
+.modal__subtitle {
+    font-size: 12px;
+    color: #64748B;
+    margin-top: 4px;
+}
+
+.modal__close {
+    font-size: 16px;
+    color: #94A3B8;
+}
+
+.modal__label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748B;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.modal__textarea {
+    width: 100%;
+    min-height: 90px;
+    border: 1px solid #BAE6FD;   
+    background-color: #F0F9FF;
+    border-radius: 12px;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: none;
+}
+
+.modal__textarea::placeholder {
+    font-size: 12px;
+    opacity: 0.7;
+}
+
+.modal__textarea:focus {
+    outline: 0;
+    border-color: #0EA5E9;
+}
+
+.modal__counter {
+    text-align: right;
+    font-size: 12px;
+    color: #94A3B8;
+    margin-top: 20px;
+}
+
+.modal__cancel,
+.modal__save {
+    flex: 1;
+    padding: 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.modal__cancel {
+    border: 1px solid #E2E8F0;
+    background: white;
+}
+
+.modal__save {
+    background-color: #14B8A6;
+    color: white;
 }

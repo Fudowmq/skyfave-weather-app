@@ -93,9 +93,9 @@
                                 </button>
                             </div>
                         </li>
-                    </ul>
+                    
 
-                    <ul class="favorites__list">
+                    
                         <li class="favorites__item">
                             <div class="favorites-row">
                                 <div class="favorites-img">
@@ -105,7 +105,7 @@
                                 <div class="favorites-title">
                                     <div class="favorites-city">Tokyo <span>JP</span></div>
                                     <p class="favorites-weather">Humid & Hazy</p>
-
+                                    <p class="favorites-title__desc"></p>
                                 </div>
     
                                 <div class="favorites-temperature">
@@ -125,9 +125,9 @@
                                 </button>
                             </div>
                         </li>
-                    </ul>
+                        
 
-                    <ul class="favorites__list">
+
                         <li class="favorites__item">
                             <div class="favorites-row">
                                 <div class="favorites-img">
@@ -163,5 +163,29 @@
             </div>
         </div>
     </main>
+
+    <div class="modal" id="noteModal">
+        <div class="modal__backdrop"></div>
+        <div class="modal__window">
+            <div class="modal__header">
+                <div>
+                    <h3 class="modal__title">Заметка · <span id="noteCityName">Paris</span></h3>
+                    <p class="modal__subtitle">Добавьте личную пометку для этого города</p>
+                </div>
+                <button class="modal__close" id="noteModalClose">✕</button>
+            </div>
+
+            <label class="modal__label">ВАША ЗАМЕТКА</label>
+            <textarea class="modal__textarea" id="noteTextarea" maxlength="200" placeholder="Например: планирую поезду в марте 😊"></textarea>
+            <div class="modal__counter"><span id="noteCounter">0</span>/200</div>
+
+            <div class="modal__actions">
+                <button class="modal__cancel" id="noteModalCancel">Отмена</button>
+                <button class="modal__save" id="noteModalSave">Сохранить заметку</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
