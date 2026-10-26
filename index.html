@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <header>
         <div class="header-container">
@@ -25,7 +27,7 @@
                         <button>°F</button>
                     </div>
 
-                    <button class="header-button__add">+ Добавить город</button>
+                    <button class="header-button__add add-city-trigger">+ Добавить город</button>
                 </div>
             </div>
         </div>
@@ -36,30 +38,32 @@
                 <section class="weather-search">
                     <h1 class="weather-title">Погода сейчас</h1>
                     <p class="weather-desc">Введите город для поиска актуального прогноза</p>
-                    <input class="weather-input" type="text" placeholder="Введите название города...">
-                    <button class="weather-search__button">Найти</button>
-                    
+                    <input class="weather-input" id="weatherInput" type="text" placeholder="Введите название города...">
+                    <button class="weather-search__button" id="weatherSearchBtn">Найти</button>
+
                     <div class="weather-button__nav">
                         <button class="weather-button">Dubai</button>
                         <button class="weather-button">Paris</button>
                         <button class="weather-button">Tokyo</button>
                         <button class="weather-button">New York</button>
-                        <button class="weather-button">Sedney</button>
+                        <button class="weather-button">Sydney</button>
                         <button class="weather-button">London</button>
                     </div>
 
-                    <div class="weather-search__empty">
-                        <div class="weather-search__empty-img">
-                            <img src="src/internet.png" alt="">
+                    <div id="weatherResult">
+                        <div class="weather-search__empty">
+                            <div class="weather-search__empty-img">
+                                <img src="src/internet.png" alt="">
+                            </div>
+                            <div class="weather-search__empty-text">Введите название любого города и узнайте погоду прямо сейчас</div>
                         </div>
-                        <div class="weather-search__empty-text">Введите название любого города и узнайте погоду прямо сейчас</div>
                     </div>
                 </section>
 
                 <section class="favorites">
                     <div class="favorites-header">
                         <h2 class="favorites-header_title">Избранные города</h2>
-                        <button class="favorites_header_button">+</button>
+                        <button class="favorites_header_button add-city-trigger">+</button>
                     </div>
                     <span class="favorites-header_desc">3 города</span>
 
@@ -69,13 +73,13 @@
                                 <div class="favorites-img">
                                     <img src="src/sun.png" alt="">
                                 </div>
-    
+
                                 <div class="favorites-title">
                                     <div class="favorites-city">Paris <span>FR</span></div>
                                     <p class="favorites-weather">Sunny</p>
                                     <p class="favorites-title__desc">"Planning a trip in October 🗼"</p>
                                 </div>
-    
+
                                 <div class="favorites-temperature">
                                     <div class="favorites-degrees">19°C</div>
                                     <div class="favorites-metrics">В 22 / Н 14</div>
@@ -93,21 +97,21 @@
                                 </button>
                             </div>
                         </li>
-                    
 
-                    
+
+
                         <li class="favorites__item">
                             <div class="favorites-row">
                                 <div class="favorites-img">
                                     <img src="src/sun.png" alt="">
                                 </div>
-    
+
                                 <div class="favorites-title">
                                     <div class="favorites-city">Tokyo <span>JP</span></div>
                                     <p class="favorites-weather">Humid & Hazy</p>
                                     <p class="favorites-title__desc"></p>
                                 </div>
-    
+
                                 <div class="favorites-temperature">
                                     <div class="favorites-degrees">28°C</div>
                                     <div class="favorites-metrics">В 30 / Н 24</div>
@@ -125,7 +129,6 @@
                                 </button>
                             </div>
                         </li>
-                        
 
 
                         <li class="favorites__item">
@@ -133,13 +136,13 @@
                                 <div class="favorites-img">
                                     <img src="src/sun.png" alt="">
                                 </div>
-    
+
                                 <div class="favorites-title">
                                     <div class="favorites-city">New York <span>US</span></div>
                                     <p class="favorites-weather">Clear</p>
                                     <p class="favorites-title__desc">"Conference next month ✈️"</p>
                                 </div>
-    
+
                                 <div class="favorites-temperature">
                                     <div class="favorites-degrees">23°C</div>
                                     <div class="favorites-metrics">В 26 / Н 18</div>
@@ -176,7 +179,8 @@
             </div>
 
             <label class="modal__label">ВАША ЗАМЕТКА</label>
-            <textarea class="modal__textarea" id="noteTextarea" maxlength="200" placeholder="Например: планирую поезду в марте 😊"></textarea>
+            <textarea class="modal__textarea" id="noteTextArea" maxlength="200"
+                placeholder="Например: планирую поезду в марте 😊"></textarea>
             <div class="modal__counter"><span id="noteCounter">0</span>/200</div>
 
             <div class="modal__actions">
@@ -186,6 +190,31 @@
         </div>
     </div>
 
+    <div class="modal" id="addCityModal">
+        <div class="modal__backdrop"></div>
+        <div class="modal__window">
+            <div class="modal__header">
+                <div>
+                    <h3 class="modal__title">Добавить город</h3>
+                    <p class="modal__subtitle">Введите название, чтобы добавить в избранное</p>
+                </div>
+                <button class="modal__close" id="addCityModalClose" type="button">✕</button>
+            </div>
+
+            <label class="modal__label" for="addCityInput">ГОРОД</label>
+            <input type="text" class="modal__input" id="addCityInput" placeholder="Например: Лондон, Tokyo, Paris...">
+            <p class="modal__error" id="addCityError">Город не найден. Проверьте название и попробуйте снова.</p>
+            <p class="modal__hint">Попробуйте: London, Paris, Tokyo, New York, Berlin, Sydney</p>
+
+            <div class="modal__actions">
+                <button class="modal__cancel" id="addCityModalCancel" type="button">Отмена</button>
+                <button class="modal__save add__city__modal" id="addCityModalSave" type="button">Добавить</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
     <script src="script.js"></script>
 </body>
+
 </html>
