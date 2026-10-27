@@ -724,3 +724,24 @@ header {
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: none; }
 }
+
+
+
+.favorites-img img {
+    width: 48px;
+    height: 48px;
+}
+
+.favorites-skeleton {
+    height: 152px;
+    margin-top: 16px;
+    border-radius: 16px;
+    background: linear-gradient(90deg, #E0F2FE 25%, #F0F9FF 50%, #E0F2FE 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.2s infinite;
+}
+
+.modal_save:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

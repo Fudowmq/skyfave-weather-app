@@ -14,11 +14,18 @@ const addCityModalCancel = document.getElementById('addCityModalCancel');
 const addCityModalSave = document.getElementById('addCityModalSave');
 const addCityInput = document.getElementById('addCityInput');
 const addCityError = document.getElementById('addCityError');
+let favorites = []
+const DEFAULT_FAVORITES = [
+    { query: 'Paris', note: 'Planning trip in October 🗼'},
+    { query: 'Tokyo', note: '' },
+    { query: 'New York', note: 'Conference next month ✈️' },
+]
 
 favoritesList.addEventListener('click', (event) => {
     const deleteBtn = event.target.closest('.favorites-delete');
     if (deleteBtn) {
         const card = deleteBtn.closest('.favorites__item');
+        favorites = favorites.filter((f) => f.id !== Number(card.dataset.id))
         card.remove();
         updateFavoritesCount();
         return;
@@ -26,7 +33,6 @@ favoritesList.addEventListener('click', (event) => {
 
     const noteBtn = event.target.closest('.favorites-note');
     if (noteBtn) {
-        const card = noteBtn.closest('.favorites__item');
         openNoteModal(card);
     }
 });
@@ -96,6 +102,9 @@ noteModalSave.addEventListener('click', () => {
         descEl.textContent = `"${value}"`
     }
 
+    const fav = favorites.find((f) => f.id === Number(currentCard.dataset.id))
+    if (fav) fav.note = value
+
     closeNoteModal();
 });
 
@@ -126,21 +135,45 @@ addCityInput.addEventListener('input', () => {
     addCityError.classList.remove('visible')
 })
 
-addCityModalSave.addEventListener('click', () => {
+function showAddCityError(message) {
+    addCityInput.classList.add('error')
+    addCityError.textContent = message
+    addCityError.classList.add('visible')
+}
+
+addCityModalSave.addEventListener('click', async () => {
     const value = addCityInput.value.trim()
 
     if (!value) {
-        addCityInput.classList.add('error')
-        addCityError.classList.add('visible')
+        showAddCityError('Введите название города.')
         return
     }
 
-    console.log('Добавляем город:', value)
+    addCityModalSave.disabled = true
+    addCityModalSave.textContent = 'Добавляем...'
 
-    addCityInput.value = ''
-    addCityInput.classList.remove('error')
-    addCityError.classList.remove('visible')
-    closeModal(addCityModal)
+    try {
+        const data = await getWeather(value)
+
+        if (favorites.some((f) => f.id === data.id)) {
+            showAddCityError('Этот город уже есть в избранном.')
+            return
+        }
+
+        favorites.push({ id: data.id, name: data.name, note: '' })
+        favoritesList.append(createFavoriteCard(data))
+        updateFavoritesCount()
+        closeModal(addCityModal)
+    } catch(err) {
+        if (err.message === 'NOT_FOUND') {
+            showAddCityError('Город не найден. Проверьте название и попробуйте снова.')
+        } else {
+            showAddCityError('Не удалось получить данные. Попробуйте позже.')
+        }
+    } finally {
+        addCityModalSave.disabled = false
+        addCityModalSave.textContent = 'Добавить'
+    }
 })
 
 
@@ -275,3 +308,88 @@ document.querySelectorAll('.weather-button').forEach((btn) => {
         searchWeather(btn.textContent)
     })
 })
+
+function setCardNote(card, note) {
+    const titleEl = card.querySelector('.favorites-title')
+    let descEl = card.querySelector('.favorites-title__desc')
+
+    if (!descEl) {
+        descEl = document.createElement('p')
+        descEl.className = 'favorites-title__desc'
+        titleEl.appendChild(descEl)
+    }
+    descEl.textContent = `"${note}"`
+}
+
+function createFavoriteCard(data, note = '') {
+    const info = data.weather[0]
+    const description = info.description.charAt(0).toUpperCase() + info.description.slice(1)
+
+    const li = document.createElement('li')
+    li.className = 'favorites__item'
+    li.dataset.id = data.id
+
+    li.innerHTML = `
+        <div class="favorites-row">
+            <div class="favorites-img">
+                <img src="https://openweathermap.org/img/wn/${info.icon}@2x.png" alt="${info.description}">
+            </div>
+
+            <div class="favorites-title">
+                <div class="favorites-city">${data.name} <span>${data.sys.country}</span></div> 
+                <p class="favorites-weather">${description}</p>
+            </div>
+
+            <div class="favorites-temperature">
+                <div class="favorites-degrees" data-temp="${data.main.temp}">${Math.round(data.main.temp)}°C</div>
+                <div class="favorites-metrics" data-high="${data.main.temp_max}" data-low="${data.main.temp_min}">
+                    В ${Math.round(data.main.temp_max)} / Н ${Math.round(data.main.temp_min)}
+                </div>
+            </div>
+        </div>
+
+
+        <div class="favorites-changes">
+            <button class="favorites-note">
+                <img src="src/note.png" alt="">
+                <span class="favorites-note__button">Заметка</span>
+            </button>
+            <button class="favorites-delete">
+                <img src="src/trash.png" alt="">
+                <span class="favorites-delete__button">Удалить</span>
+            </button>
+        </div>`
+
+    if (note) setCardNote(li, note)
+    return li
+}
+
+function showFavoritesLoading() {
+    favoritesList.innerHTML = '<li class="favorites-skeleton"></li>'.repeat(3)
+}
+
+async function loadFavorites() {
+    showFavoritesLoading()
+
+    const results = await Promise.allSettled(
+        DEFAULT_FAVORITES.map((c) => getWeather(c.query))
+    )
+
+    favoritesList.innerHTML = ''
+    favorites = []
+
+    results.forEach((res,i) => {
+        if (res.status !== 'fulfilled') {
+            console.warn('Не удалось загрузить', DEFAULT_FAVORITES[i].query, res.reason)
+            return
+        }
+        const data = res.value
+        const note = DEFAULT_FAVORITES[i].note
+        favorites.push({ id: data.id, name: data.name, note })
+        favoritesList.append(createFavoriteCard(data, note))
+    })
+
+    updateFavoritesCount()
+}
+
+loadFavorites()
