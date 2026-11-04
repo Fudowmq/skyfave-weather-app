@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SkyFave</title>
-    <link rel="icon" href="src/icon.png" type="icon/photo">
+    <link rel="icon" href="src/logo.svg" type="image/svj+xml">
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,14 +17,14 @@
         <div class="header-container">
             <div class="header-menu">
                 <div class="header-logo">
-                    <img src="src/icon.png" alt="">
+                    <img src="src/logo.svg" alt="">
                     <a href="#" class="header-text">SkyFave</a>
                 </div>
 
                 <div class="header-button">
                     <div class="unit-toggle">
-                        <button class="active">°C</button>
-                        <button>°F</button>
+                        <button class="active" data-unit="C">°C</button>
+                        <button data-unit="F">°F</button>
                     </div>
 
                     <button class="header-button__add add-city-trigger">+ Добавить город</button>
@@ -38,16 +38,18 @@
                 <section class="weather-search">
                     <h1 class="weather-title">Погода сейчас</h1>
                     <p class="weather-desc">Введите город для поиска актуального прогноза</p>
-                    <input class="weather-input" id="weatherInput" type="text" placeholder="Введите название города...">
-                    <button class="weather-search__button" id="weatherSearchBtn">Найти</button>
+                    <div class="weather-input__row">
+                        <input class="weather-input" id="weatherInput" type="text" placeholder="Введите название города...">
+                        <button class="weather-search__button" id="weatherSearchBtn">Найти</button>
+                    </div>
 
                     <div class="weather-button__nav">
-                        <button class="weather-button">Dubai</button>
-                        <button class="weather-button">Paris</button>
-                        <button class="weather-button">Tokyo</button>
-                        <button class="weather-button">New York</button>
-                        <button class="weather-button">Sydney</button>
-                        <button class="weather-button">London</button>
+                        <button class="weather-button">Астана</button>
+                        <button class="weather-button">Алматы</button>
+                        <button class="weather-button">Шымкент</button>
+                        <button class="weather-button">Кокшетау</button>
+                        <button class="weather-button">Белек</button>
+                        <button class="weather-button">Дубай</button>
                     </div>
 
                     <div id="weatherResult">
@@ -109,9 +111,9 @@
             </div>
 
             <label class="modal__label" for="addCityInput">ГОРОД</label>
-            <input type="text" class="modal__input" id="addCityInput" placeholder="Например: Лондон, Tokyo, Paris...">
-            <p class="modal__error" id="addCityError">Город не найден. Проверьте название и попробуйте снова.</p>
-            <p class="modal__hint">Попробуйте: London, Paris, Tokyo, New York, Berlin, Sydney</p>
+            <input type="text" class="modal__input" id="addCityInput" placeholder="Например: Астана, Алматы, Актау...">
+            <p class="modal__error" id="addCityError"><span class="modal__error-icon">!</span>Город не найден. Проверьте название и попробуйте снова.</p>
+            <p class="modal__hint">Попробуйте: Астана, Алматы, Кокшетау, Атырау, Актау, Дубай</p>
 
             <div class="modal__actions">
                 <button class="modal__cancel" id="addCityModalCancel" type="button">Отмена</button>

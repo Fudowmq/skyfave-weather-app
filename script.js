@@ -16,10 +16,75 @@ const addCityInput = document.getElementById('addCityInput');
 const addCityError = document.getElementById('addCityError');
 let favorites = []
 const DEFAULT_FAVORITES = [
-    { query: 'Paris', note: 'Planning trip in October 🗼'},
-    { query: 'Tokyo', note: '' },
-    { query: 'New York', note: 'Conference next month ✈️' },
+    { query: 'Астана', note: ''},
+    { query: 'Алматы', note: 'Конференция в следующем месяце' },
+    { query: 'Ankara', note: 'Планирую поездку в октябре 🗼' },
 ]
+const ICON_MAP = {
+    '01d': 'clear-day',
+    '01n': 'clear-night',
+    '02d': 'partly-cloudy-day',
+    '02n': 'partly-cloudy-night',
+    '03d': 'cloudy',
+    '03n': 'cloudy',
+    '04d': 'overcast',
+    '04n': 'overcast',
+    '09d': 'rain',
+    '09n': 'rain',
+    '10d': 'partly-cloudy-day-rain',
+    '10n': 'partly-cloudy-night-rain',
+    '11d': 'thunderstorms-day-rain',
+    '11n': 'thunderstorms-night-rain',
+    '13d': 'snow',
+    '13n': 'snow',
+    '50d': 'fog-day',
+    '50n': 'fog-night',
+}
+const unitButtons = document.querySelectorAll('.unit-toggle button')
+let currentUnit = localStorage.getItem('unit') === 'F' ? 'F' : 'C'
+
+function weatherIcon(info, className = '', animated = false) {
+    const name = ICON_MAP[info.icon]
+    const fallback = `https://openweathermap.org/img/wn/${info.icon}@2x.png`
+    const pack = animated ? 'svg' : 'svg-static'
+    const src = name ? `https://cdn.jsdelivr.net/npm/@meteocons/${pack}/fill/${name}.svg` : fallback
+
+    return `<img${className ? ` class="${className}"` : ''} src="${src}" alt="${info.description}" onerror="this.onerror=null;this.src='${fallback}'">`
+}
+
+function toUnit(celsius) {
+    return Math.round(currentUnit === 'C' ? celsius : celsius * 9 / 5 + 32)
+}
+
+function tempHTML(celsius, { bare = false, tag = 'span'} = {}) {
+    const value = toUnit(celsius)
+    const text = bare? value : `${value}°${currentUnit}`
+    return `<${tag} class="js-temp" data-c="${celsius}" ${bare ? ' data-bare ' : ''}>${text}</${tag}>`
+}
+
+function updateTemperatures() {
+    document.querySelectorAll('.js-temp').forEach((el) => {
+        const value = toUnit(Number(el.dataset.c))
+        el.textContent = el.hasAttribute('data-bare') ? value : `${value}°${currentUnit}`
+    })
+    document.querySelectorAll('.js-unit').forEach((el) => {
+        el.textContent = `°${currentUnit}`
+    })
+}
+
+function setUnit(unit) {
+    currentUnit = unit
+    localStorage.setItem('unit', unit)
+    unitButtons.forEach((b) => b.classList.toggle('active', b.dataset.unit === unit))
+    updateTemperatures()
+}
+
+unitButtons.forEach((btn) => {
+    btn.addEventListener('click', () => setUnit(btn.dataset.unit))
+})
+
+setUnit(currentUnit)
+
 
 favoritesList.addEventListener('click', (event) => {
     const deleteBtn = event.target.closest('.favorites-delete');
@@ -33,7 +98,7 @@ favoritesList.addEventListener('click', (event) => {
 
     const noteBtn = event.target.closest('.favorites-note');
     if (noteBtn) {
-        openNoteModal(card);
+        openNoteModal(noteBtn.closest('.favorites__item'));
     }
 });
 
@@ -153,7 +218,7 @@ addCityModalSave.addEventListener('click', async () => {
     addCityModalSave.textContent = 'Добавляем...'
 
     try {
-        const data = await getWeather(value)
+        const {data, range} = await getWeatherWithRange(value)
 
         if (favorites.some((f) => f.id === data.id)) {
             showAddCityError('Этот город уже есть в избранном.')
@@ -161,7 +226,7 @@ addCityModalSave.addEventListener('click', async () => {
         }
 
         favorites.push({ id: data.id, name: data.name, note: '' })
-        favoritesList.append(createFavoriteCard(data))
+        favoritesList.append(createFavoriteCard(data, range))
         updateFavoritesCount()
         closeModal(addCityModal)
     } catch(err) {
@@ -196,6 +261,28 @@ async function getWeather(city) {
     return res.json()
 } 
 
+async function getTempRange(data) {
+    try {
+        const url = `https://api.openweathermap.org/data/2.5/forecast?id=${data.id}&units=metric&appid=${API_KEY}`;
+        const res = await fetch(url)
+        if(!res.ok) throw new Error('FORECAST')
+
+        const { list } = await res.json()
+        const temps = list.slice(0, 8).map((item) => item.main.temp)
+        temps.push(data.main.temp)
+
+        return { max: Math.max(...temps), min: Math.min(...temps) }
+    } catch {
+        return { max: data.main.temp_max, min: data.main.temp_min }
+    }
+}
+
+async function getWeatherWithRange(city) {
+    const data = await getWeather(city)
+    const range = await getTempRange(data)
+    return { data, range }
+}
+
 function showLoading() {
     weatherResult.innerHTML = '<div class="weather-skeleton"></div>'
 }
@@ -225,7 +312,7 @@ function formatDate(unixSecond, tzOffset) {
     })
 }
 
-function renderWeather(data) {
+function renderWeather(data, range) {
     const info = data.weather[0]
     const tz = data.timezone
     const description = info.description.charAt(0).toUpperCase() + info.description.slice(1)
@@ -240,24 +327,23 @@ function renderWeather(data) {
                     <div class="weather-card__city">📍 ${data.name}, ${data.sys.country}</div>
                     <div class="weather-card__date">${formatDate(data.dt, tz)}</div>
                 </div>
-                <img class="weather-card__icon"
-                    src="https://openweathermap.org/img/wn/${info.icon}@2x.png"
-                    alt="${info.description}">
+                ${weatherIcon(info, 'weather-card__icon', true)}
             </div>
 
-            <div class="weather-card__temp" data-temp="${data.main.temp}">
-                <span class="weather-card__value">${Math.round(data.main.temp)}</span><span class="weather-card__unit">°C</span>
+            <div class="weather-card__temp">
+                <span class="weather-card__value">${tempHTML(data.main.temp, { bare: true })}</span><span class="weather-card__unit js-unit">°${currentUnit}</span>
             </div>
 
             <div class="weather-card__desc">${description}</div>
-            <div class="weather-card__feels">
-                В ${Math.round(data.main.temp_max)}°C / Н ${Math.round(data.main.temp_min)}°C
+            <div class="weather-card__feels" title="Ближайшие 24 часа">
+                <span class="temp-max">↑ Макс ${tempHTML(range.max)}</span>
+                <span class="temp-min">↓ Мин ${tempHTML(range.min)}</span>
             </div>
 
             <div class="weather-card__details">
                 <div class="weather-card__detail">
                     <span>Ощущается как</span>
-                    <b>${Math.round(data.main.feels_like)}°C</b>
+                    ${tempHTML(data.main.feels_like, { tag: 'b' })}
                 </div>
                 <div class="weather-card__detail">
                     <span>Влажность</span>
@@ -283,8 +369,8 @@ async function searchWeather(city) {
     showLoading()
 
     try {
-        const data = await getWeather(city)
-        renderWeather(data)
+        const { data, range } = await getWeatherWithRange(city)
+        renderWeather(data, range)
     } catch(err) {
         if (err.message === 'NOT_FOUND') {
             showError('Город не найден. Проверьте название и попробуйте снова.')
@@ -321,7 +407,7 @@ function setCardNote(card, note) {
     descEl.textContent = `"${note}"`
 }
 
-function createFavoriteCard(data, note = '') {
+function createFavoriteCard(data, range, note = '') {
     const info = data.weather[0]
     const description = info.description.charAt(0).toUpperCase() + info.description.slice(1)
 
@@ -332,7 +418,7 @@ function createFavoriteCard(data, note = '') {
     li.innerHTML = `
         <div class="favorites-row">
             <div class="favorites-img">
-                <img src="https://openweathermap.org/img/wn/${info.icon}@2x.png" alt="${info.description}">
+                ${weatherIcon(info)}
             </div>
 
             <div class="favorites-title">
@@ -341,9 +427,10 @@ function createFavoriteCard(data, note = '') {
             </div>
 
             <div class="favorites-temperature">
-                <div class="favorites-degrees" data-temp="${data.main.temp}">${Math.round(data.main.temp)}°C</div>
-                <div class="favorites-metrics" data-high="${data.main.temp_max}" data-low="${data.main.temp_min}">
-                    В ${Math.round(data.main.temp_max)} / Н ${Math.round(data.main.temp_min)}
+                <div class="favorites-degrees">${tempHTML(data.main.temp)}</div>
+                <div class="favorites-metrics" title="Ближайшие 24 часа: макс / мин">
+                    <span class="temp-max">↑ ${tempHTML(range.max, { bare: true })}°</span>
+                    <span class="temp-min">↓ ${tempHTML(range.min, { bare: true })}°</span>
                 </div>
             </div>
         </div>
@@ -372,7 +459,7 @@ async function loadFavorites() {
     showFavoritesLoading()
 
     const results = await Promise.allSettled(
-        DEFAULT_FAVORITES.map((c) => getWeather(c.query))
+        DEFAULT_FAVORITES.map((c) => getWeatherWithRange(c.query))
     )
 
     favoritesList.innerHTML = ''
@@ -383,10 +470,10 @@ async function loadFavorites() {
             console.warn('Не удалось загрузить', DEFAULT_FAVORITES[i].query, res.reason)
             return
         }
-        const data = res.value
+        const {data, range} = res.value
         const note = DEFAULT_FAVORITES[i].note
         favorites.push({ id: data.id, name: data.name, note })
-        favoritesList.append(createFavoriteCard(data, note))
+        favoritesList.append(createFavoriteCard(data, range, note))
     })
 
     updateFavoritesCount()
